@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathForces — Contests</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .contests-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 36px;
+  }
+
+  .contests-header {
+    margin-bottom: 32px;
+  }
+  .contests-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .contests-count {
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  .contests-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-input:focus { border-color: var(--accent2); }
+
+  .dropdown-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .dropdown-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 10px 36px 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a84a0'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  .dropdown-btn:hover { border-color: var(--accent2); color: var(--text); }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px;
+    z-index: 50;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .dropdown-menu.show { display: block; }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.1s;
+    letter-spacing: 0.3px;
+  }
+  .dropdown-item:hover { background: var(--surface2); color: var(--text); }
+  .dropdown-item.active {
+    background: rgba(78,140,255,0.1);
+    color: var(--accent2);
+  }
+  .dropdown-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .dot-all { background: #7a84a0; }
+  .dot-div1 { background: #a78bfa; }
+  .dot-div2 { background: #4e8cff; }
+  .dot-div3 { background: #3ecf8e; }
+  .dot-div4 { background: #f0c040; }
+
+  /* GHI ĐÈ STYLES.CSS - Nút Apply riêng cho trang Contests */
+  .contests-toolbar .apply-btn-contests {
+    background: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    color: #0a0e14 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 9px 20px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    letter-spacing: 0.3px !important;
+    transition: all 0.15s !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    line-height: 1.4 !important;
+    width: auto !important;
+    margin-top: 0 !important;
+    text-transform: none !important;
+    transform: none !important;
+  }
+  .contests-toolbar .apply-btn-contests:hover { 
+    background: #f5cc3a !important; 
+    border-color: #f5cc3a !important;
+    box-shadow: 0 2px 8px rgba(240,192,64,0.2) !important;
+    transform: translateY(0) !important;
+  }
+  .contests-toolbar .apply-btn-contests:active {
+    transform: scale(0.98) !important;
+  }
+
+  .contest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .contest-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 26px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .contest-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  .contest-div-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .badge-div1 { background: rgba(167,139,250,0.15); color: #a78bfa; }
+  .badge-div2 { background: rgba(78,140,255,0.15); color: var(--accent2); }
+  .badge-div3 { background: rgba(62,207,142,0.15); color: var(--green); }
+  .badge-div4 { background: rgba(240,192,64,0.15); color: var(--accent); }
+
+  .contest-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .contest-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .contest-meta {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .contest-meta-item {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .contest-meta-item span {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .contest-arrow {
+    color: var(--text-muted);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    .contests-container { padding: 24px 16px; }
+    .contest-card { padding: 16px 18px; }
+    .contests-toolbar { flex-wrap: wrap; }
+    .search-input { min-width: 150px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">∑</div>
+    Math<span>Forces</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="problemset.html">Problemset</a>
+    <a class="nav-link active" href="contests.html">Contests</a>
+    
+  </div>
+  
+</nav>
+
+<div class="contests-container">
+  <div class="contests-header">
+    <div class="contests-title">Contests</div>
+    <div class="contests-count" id="countLabel"></div>
+  </div>
+
+  <div class="contests-toolbar">
+    <input class="search-input" id="searchInput" type="text" placeholder="Search contest by name...">
+    <div class="dropdown-wrapper" id="dropdownWrapper">
+      <button class="dropdown-btn" id="dropdownBtn">All Divisions</button>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <button class="dropdown-item active" data-div="all">
+          <span class="dropdown-dot dot-all"></span> All Divisions
+        </button>
+        <button class="dropdown-item" data-div="Div. 1">
+          <span class="dropdown-dot dot-div1"></span> Div. 1
+        </button>
+        <button class="dropdown-item" data-div="Div. 2">
+          <span class="dropdown-dot dot-div2"></span> Div. 2
+        </button>
+        <button class="dropdown-item" data-div="Div. 3">
+          <span class="dropdown-dot dot-div3"></span> Div. 3
+        </button>
+        <button class="dropdown-item" data-div="Div. 4">
+          <span class="dropdown-dot dot-div4"></span> Div. 4
+        </button>
+      </div>
+    </div>
+    <button class="apply-btn-contests" id="applyBtn">Apply</button>
+  </div>
+
+  <div class="contest-list" id="contestList"></div>
+</div>
+
+<script src="contests.js"></script>
+<script>
+  const contestList = document.getElementById('contestList');
+  const countLabel = document.getElementById('countLabel');
+  const searchInput = document.getElementById('searchInput');
+  const dropdownBtn = document.getElementById('dropdownBtn');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  const applyBtn = document.getElementById('applyBtn');
+  const dropdownWrapper = document.getElementById('dropdownWrapper');
+
+  let activeDivision = 'all';
+  let pendingDivision = 'all';
+  let searchQuery = '';
+
+  const divBadgeClass = (div) => {
+    if (div === 'Div. 1') return 'badge-div1';
+    if (div === 'Div. 2') return 'badge-div2';
+    if (div === 'Div. 3') return 'badge-div3';
+    if (div === 'Div. 4') return 'badge-div4';
+    return '';
+  };
+
+  dropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle('show');
+  });
+
+  document.addEventListener('click', () => {
+    dropdownMenu.classList.remove('show');
+  });
+
+  dropdownWrapper.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', () => {
+      dropdownItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      pendingDivision = item.dataset.div;
+      dropdownBtn.textContent = item.textContent.trim();
+      dropdownMenu.classList.remove('show');
+    });
+  });
+
+  applyBtn.addEventListener('click', () => {
+    activeDivision = pendingDivision;
+    searchQuery = searchInput.value.trim();
+    render();
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      activeDivision = pendingDivision;
+      searchQuery = searchInput.value.trim();
+      render();
+    }
+  });
+
+  function render() {
+    let filtered = CONTESTS.filter(c => {
+      if (activeDivision !== 'all' && c.division !== activeDivision) return false;
+      if (searchQuery && !c.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    });
+
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    countLabel.textContent = `${filtered.length} contest${filtered.length !== 1 ? 's' : ''}`;
+
+    const formatDate = (dateStr) => {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    };
+
+    contestList.innerHTML = filtered.map(c => `
+      <a class="contest-card" href="contest-problems.html?id=${c.id}">
+        <span class="contest-div-badge ${divBadgeClass(c.division)}">${c.division}</span>
+        <div class="contest-info">
+          <div class="contest-name">${c.title}</div>
+          <div class="contest-meta">
+            <span class="contest-meta-item">Date: <span>${formatDate(c.date)}</span></span>
+            <span class="contest-meta-item">Duration: <span>${c.duration}</span></span>
+          </div>
+        </div>
+        <span class="contest-arrow">→</span>
+      </a>
+    `).join('');
+  }
+
+  render();
+</script>
+</body>
+</html>
