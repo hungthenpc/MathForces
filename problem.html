@@ -84,6 +84,24 @@
     font-size: 16px;
   }
 
+  /* Ảnh hình học - xử lý nền trắng */
+  .problem-content img,
+  .solution-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 20px 0;
+    background: transparent;
+    mix-blend-mode: multiply;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .problem-content img,
+    .solution-content img {
+      mix-blend-mode: screen;
+      filter: brightness(0.9) contrast(1.1);
+    }
+  }
+
   .tag-list {
     display: flex;
     gap: 6px;
@@ -146,6 +164,16 @@
     letter-spacing: 0.3px;
   }
 
+  /* Phần ghi nguồn lời giải */
+  .solution-source {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-light);
+    font-style: italic;
+  }
+
   .not-found {
     text-align: center;
     padding: 80px 20px;
@@ -193,9 +221,7 @@
    <a class="nav-link" href="index.html">Home</a>
    <a class="nav-link active" href="problemset.html">Problemset</a>
     <a class="nav-link" href="contests.html">Contests</a>
-  
   </div>
- 
 </nav>
 
 <div class="problem-container" id="problemContainer"></div>
@@ -219,16 +245,20 @@
       </div>
     `;
   } else {
-    document.title = `${problem.id} — ${problem.title} — MathForces`;
+    document.title = `Problem - ${problem.id} - MathForces`;
 
     const ratingClass = (r) =>
       r < 1200 ? 'rating-easy' :
       r < 2000 ? 'rating-medium' :
       r < 2700 ? 'rating-hard' : 'rating-expert';
 
+    // Tạo phần hiển thị nguồn lời giải nếu có
+    const solutionSourceHtml = problem.solutionSource && problem.solutionSource.trim() !== '' 
+      ? `<div class="solution-source"> Nguồn: ${problem.solutionSource}</div>` 
+      : '';
+
     container.innerHTML = `
       <div class="problem-header">
-        <div class="problem-id">Problem #${problem.id}</div>
         <div class="problem-title">${problem.title}</div>
         <div class="problem-meta">
           <span class="card-rating ${ratingClass(problem.rating)}" style="font-size:14px;padding:4px 12px;">${problem.rating}</span>
@@ -252,6 +282,7 @@
         <button class="solution-btn" id="solutionBtn" onclick="toggleSolution()">Solution</button>
         <div class="solution-content" id="solutionContent">
           <h3> Solution</h3>
+          ${solutionSourceHtml}
           ${problem.solution}
         </div>
       </div>
