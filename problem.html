@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathForces — Problem</title>
+<title>MathForces — Bài tập</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -195,6 +195,17 @@
   .solution-content mjx-container {
     font-size: 17px !important;
   }
+  .problem-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sub-ratings {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 </style>
 <script>
   MathJax = {
@@ -218,9 +229,9 @@
     Math<span>Forces</span>
   </a>
   <div class="nav-links">
-   <a class="nav-link" href="index.html">Home</a>
-   <a class="nav-link active" href="problemset.html">Problemset</a>
-    <a class="nav-link" href="contests.html">Contests</a>
+    <a class="nav-link" href="index.html">Trang chủ</a>
+    <a class="nav-link active" href="problemset.html">Danh sách bài</a>
+    <a class="nav-link" href="contests.html">Kì thi</a>
   </div>
 </nav>
 
@@ -240,28 +251,36 @@
   if (!problem) {
     container.innerHTML = `
       <div class="not-found">
-        <h2>Problem Not Found</h2>
-        <p>No problem with ID "${problemId || '?'}" exists.</p>
+        <h2>Không tìm thấy bài tập</h2>
+        <p>Không có bài tập nào với ID "${problemId || '?'}".</p>
       </div>
     `;
   } else {
-    document.title = `Problem - ${problem.id} - MathForces`;
+    document.title = `${problem.title} — MathForces`;
 
     const ratingClass = (r) =>
       r < 1200 ? 'rating-easy' :
       r < 2000 ? 'rating-medium' :
       r < 2700 ? 'rating-hard' : 'rating-expert';
 
-    // Tạo phần hiển thị nguồn lời giải nếu có
     const solutionSourceHtml = problem.solutionSource && problem.solutionSource.trim() !== '' 
-      ? `<div class="solution-source"> Nguồn: ${problem.solutionSource}</div>` 
+      ? `<div class="solution-source">Nguồn: ${problem.solutionSource}</div>` 
       : '';
 
     container.innerHTML = `
       <div class="problem-header">
         <div class="problem-title">${problem.title}</div>
         <div class="problem-meta">
-          <span class="card-rating ${ratingClass(problem.rating)}" style="font-size:14px;padding:4px 12px;">${problem.rating}</span>
+         <div class="problem-meta-left">
+  <span class="card-rating ${ratingClass(problem.rating)}" style="font-size:14px;padding:4px 12px;">${problem.rating}</span>
+  ${problem.subRatings ? `
+    <div class="sub-ratings">
+      ${problem.subRatings.map(sr => `
+        <span class="card-rating ${ratingClass(sr.value)}" style="font-size:12px;padding:3px 10px;">Ý ${sr.label}: ${sr.value}</span>
+      `).join('')}
+    </div>
+  ` : ''}
+</div>
         </div>
         <div class="tag-list">
           ${problem.tags.map(t => `<span class="tag-item">${t}</span>`).join('')}
@@ -279,9 +298,9 @@
 
       ${problem.solution ? `
       <div class="solution-section">
-        <button class="solution-btn" id="solutionBtn" onclick="toggleSolution()">Solution</button>
+        <button class="solution-btn" id="solutionBtn" onclick="toggleSolution()">Lời giải</button>
         <div class="solution-content" id="solutionContent">
-          <h3> Solution</h3>
+          <h3>Lời giải</h3>
           ${solutionSourceHtml}
           ${problem.solution}
         </div>
@@ -295,7 +314,7 @@
     const btn = document.getElementById('solutionBtn');
     if (content) {
       content.classList.toggle('show');
-      btn.textContent = content.classList.contains('show') ? 'Hide Solution' : 'Solution';
+      btn.textContent = content.classList.contains('show') ? 'Ẩn lời giải' : 'Lời giải';
       if (content.classList.contains('show') && window.MathJax) {
         MathJax.typesetPromise([content]).catch(err => console.error('MathJax error:', err));
       }

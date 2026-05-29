@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathForces — Contests</title>
+<title>MathForces — Kỳ thi</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -124,7 +124,6 @@
   .dot-div3 { background: #3ecf8e; }
   .dot-div4 { background: #f0c040; }
 
-  /* GHI ĐÈ STYLES.CSS - Nút Apply riêng cho trang Contests */
   .contests-toolbar .apply-btn-contests {
     background: var(--accent) !important;
     border: 1px solid var(--accent) !important;
@@ -224,6 +223,36 @@
     flex-shrink: 0;
   }
 
+  /* Phân trang */
+  .pagination {
+    display: flex;
+    gap: 6px;
+    margin-top: 28px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .page-btn:hover {
+    border-color: var(--accent2);
+    color: var(--text);
+  }
+  .page-btn.active {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #fff;
+  }
+
   @media (max-width: 640px) {
     .contests-container { padding: 24px 16px; }
     .contest-card { padding: 16px 18px; }
@@ -240,27 +269,25 @@
     Math<span>Forces</span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="index.html">Home</a>
-    <a class="nav-link" href="problemset.html">Problemset</a>
-    <a class="nav-link active" href="contests.html">Contests</a>
-    
+    <a class="nav-link" href="index.html">Trang chủ</a>
+    <a class="nav-link" href="problemset.html">Danh sách bài</a>
+    <a class="nav-link active" href="contests.html">Kì thi</a>
   </div>
-  
 </nav>
 
 <div class="contests-container">
   <div class="contests-header">
-    <div class="contests-title">Contests</div>
+    <div class="contests-title">Kì thi</div>
     <div class="contests-count" id="countLabel"></div>
   </div>
 
   <div class="contests-toolbar">
-    <input class="search-input" id="searchInput" type="text" placeholder="Search contest by name...">
+    <input class="search-input" id="searchInput" type="text" placeholder="Tìm kiếm tên kì thi...">
     <div class="dropdown-wrapper" id="dropdownWrapper">
-      <button class="dropdown-btn" id="dropdownBtn">All Divisions</button>
+      <button class="dropdown-btn" id="dropdownBtn">Tất cả Divisions</button>
       <div class="dropdown-menu" id="dropdownMenu">
         <button class="dropdown-item active" data-div="all">
-          <span class="dropdown-dot dot-all"></span> All Divisions
+          <span class="dropdown-dot dot-all"></span> Tất cả Divisions
         </button>
         <button class="dropdown-item" data-div="Div. 1">
           <span class="dropdown-dot dot-div1"></span> Div. 1
@@ -276,16 +303,18 @@
         </button>
       </div>
     </div>
-    <button class="apply-btn-contests" id="applyBtn">Apply</button>
+    <button class="apply-btn-contests" id="applyBtn">Tìm kiếm</button>
   </div>
 
   <div class="contest-list" id="contestList"></div>
+  <div class="pagination" id="pagination"></div>
 </div>
 
 <script src="contests.js"></script>
 <script>
   const contestList = document.getElementById('contestList');
   const countLabel = document.getElementById('countLabel');
+  const paginationDiv = document.getElementById('pagination');
   const searchInput = document.getElementById('searchInput');
   const dropdownBtn = document.getElementById('dropdownBtn');
   const dropdownMenu = document.getElementById('dropdownMenu');
@@ -296,6 +325,8 @@
   let activeDivision = 'all';
   let pendingDivision = 'all';
   let searchQuery = '';
+  let currentPage = 1;
+  const ITEMS_PER_PAGE = 10;
 
   const divBadgeClass = (div) => {
     if (div === 'Div. 1') return 'badge-div1';
@@ -331,6 +362,7 @@
   applyBtn.addEventListener('click', () => {
     activeDivision = pendingDivision;
     searchQuery = searchInput.value.trim();
+    currentPage = 1;
     render();
   });
 
@@ -338,39 +370,98 @@
     if (e.key === 'Enter') {
       activeDivision = pendingDivision;
       searchQuery = searchInput.value.trim();
+      currentPage = 1;
       render();
     }
   });
 
-  function render() {
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  function formatDuration(durationStr) {
+    const match = durationStr.match(/(\d+(?:\.\d+)?)\s*hours?/);
+    if (match) {
+      const hours = parseFloat(match[1]);
+      if (Number.isInteger(hours)) return `${hours} giờ`;
+      const whole = Math.floor(hours);
+      const mins = Math.round((hours - whole) * 60);
+      return `${whole} giờ ${mins} phút`;
+    }
+    return durationStr;
+  }
+
+  function getFilteredContests() {
     let filtered = CONTESTS.filter(c => {
       if (activeDivision !== 'all' && c.division !== activeDivision) return false;
       if (searchQuery && !c.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       return true;
     });
-
     filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return filtered;
+  }
 
-    countLabel.textContent = `${filtered.length} contest${filtered.length !== 1 ? 's' : ''}`;
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) {
+      paginationDiv.innerHTML = '';
+      return;
+    }
+    let html = '';
+    if (currentPage > 1) {
+      html += `<button class="page-btn" data-page="${currentPage - 1}">←</button>`;
+    }
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, start + 4);
+    if (end - start < 4) start = Math.max(1, end - 4);
+    for (let i = start; i <= end; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    if (currentPage < totalPages) {
+      html += `<button class="page-btn" data-page="${currentPage + 1}">→</button>`;
+    }
+    paginationDiv.innerHTML = html;
+    paginationDiv.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const newPage = parseInt(btn.dataset.page);
+        if (!isNaN(newPage)) {
+          currentPage = newPage;
+          render();
+        }
+      });
+    });
+  }
 
-    const formatDate = (dateStr) => {
-      const d = new Date(dateStr + 'T00:00:00');
-      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    };
-
-    contestList.innerHTML = filtered.map(c => `
+  function render() {
+    const allContests = getFilteredContests();
+    const totalPages = Math.ceil(allContests.length / ITEMS_PER_PAGE);
+    
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const pageContests = allContests.slice(start, start + ITEMS_PER_PAGE);
+    
+    countLabel.textContent = `${allContests.length} kì thi`;
+    
+    contestList.innerHTML = pageContests.map(c => `
       <a class="contest-card" href="contest-problems.html?id=${c.id}">
         <span class="contest-div-badge ${divBadgeClass(c.division)}">${c.division}</span>
         <div class="contest-info">
           <div class="contest-name">${c.title}</div>
           <div class="contest-meta">
-            <span class="contest-meta-item">Date: <span>${formatDate(c.date)}</span></span>
-            <span class="contest-meta-item">Duration: <span>${c.duration}</span></span>
+            <span class="contest-meta-item">Ngày: <span>${formatDate(c.date)}</span></span>
+            <span class="contest-meta-item">Thời gian: <span>${formatDuration(c.duration)}</span></span>
           </div>
         </div>
         <span class="contest-arrow">→</span>
       </a>
     `).join('');
+    
+    renderPagination(totalPages);
   }
 
   render();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathForces — Problem Set</title>
+<title>MathForces — Danh sách bài</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script>
@@ -28,9 +28,9 @@
     Math<span>Forces</span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="index.html">Home</a>
-    <a class="nav-link active" href="problemset.html">Problemset</a>
-    <a class="nav-link" href="contests.html">Contests</a>
+    <a class="nav-link" href="index.html">Trang chủ</a>
+    <a class="nav-link active" href="problemset.html">Danh sách bài</a>
+    <a class="nav-link" href="contests.html">Kì thi</a>
     
   </div>
   
@@ -40,7 +40,7 @@
 
   <aside class="sidebar">
     <div class="filter-section">
-      <div class="filter-label">Rating Range</div>
+      <div class="filter-label">Độ khó</div>
       <div class="range-row">
         <input class="range-input" id="ratingMin" type="number" placeholder="800" min="800" max="3500" value="800">
         <span class="range-sep">–</span>
@@ -49,47 +49,47 @@
     </div>
 
     <div class="filter-section">
-      <div class="filter-label">Tags</div>
+      <div class="filter-label">Chủ đề</div>
       <div class="tags-grid-wrapper">
         <div class="tags-grid" id="tagsGrid">
-          <button class="tag-toggle" data-tag="algebra">algebra</button>
-          <button class="tag-toggle" data-tag="combinatorics">combinatorics</button>
-          <button class="tag-toggle" data-tag="number theory">number theory</button>
-          <button class="tag-toggle" data-tag="geometry">geometry</button>
-          <button class="tag-toggle" data-tag="probability">probability</button>
-          <button class="tag-toggle" data-tag="calculus">calculus</button>
-          <button class="tag-toggle" data-tag="inequalities">inequalities</button>
-          <button class="tag-toggle" data-tag="sequences">sequences</button>
-          <button class="tag-toggle" data-tag="graph theory">graph theory</button>
-          <button class="tag-toggle" data-tag="logic">logic</button>
-          <button class="tag-toggle" data-tag="set theory">set theory</button>
-          <button class="tag-toggle" data-tag="matrices">matrices</button>
+          <button class="tag-toggle" data-tag="Số học">Số học</button>
+          <button class="tag-toggle" data-tag="Tổ hợp">Tổ hợp</button>
+          <button class="tag-toggle" data-tag="Hình học">Hình học</button>
+          <button class="tag-toggle" data-tag="Đại số">Đại số</button>
+          <button class="tag-toggle" data-tag="Bất đẳng thức">Bất đẳng thức</button>
+          <button class="tag-toggle" data-tag="Dãy số">Dãy số</button>
+          <button class="tag-toggle" data-tag="Đa thức">Đa thức</button>
+          <button class="tag-toggle" data-tag="Đồ thị">Đồ thị</button>
+          <button class="tag-toggle" data-tag="Giải tích">Giải tích</button>
+          <button class="tag-toggle" data-tag="Phương trình hàm">Phương trình hàm</button>
+          <button class="tag-toggle" data-tag="Đếm">Đếm</button>
+          <button class="tag-toggle" data-tag="Giới hạn">Giới hạn</button>
         </div>
       </div>
     </div>
 
     <div class="filter-section">
-      <div class="filter-label">Sort By</div>
+      <div class="filter-label">Sắp xếp theo</div>
       <select class="sort-select" id="sortSelect">
-        <option value="newest">Newest First</option>
-        <option value="oldest">Oldest First</option>
-        <option value="rating-asc">Rating (Low → High)</option>
-        <option value="rating-desc">Rating (High → Low)</option>
+        <option value="newest">Mới nhất</option>
+        <option value="oldest">Cũ nhất</option>
+        <option value="rating-asc">Dễ nhất</option>
+        <option value="rating-desc">Khó nhất</option>
       </select>
     </div>
 
-    <button class="apply-btn" id="applyBtn">Apply Filters</button>
+    <button class="apply-btn" id="applyBtn">Tìm kiếm</button>
   </aside>
 
   <main class="main">
     <div class="main-header">
-      <div class="main-title">Problem Set</div>
-      <div class="main-count" id="countLabel">9 problems</div>
+      <div class="main-title">Danh sách bài</div>
+      <div class="main-count" id="countLabel">9 bài</div>
     </div>
 
     <div class="search-row">
-      <input class="search-input" id="searchInput" type="text" placeholder="Search problems by name…">
-      <button class="search-btn" id="searchBtn">Search</button>
+      <input class="search-input" id="searchInput" type="text" placeholder="Tìm kiếm tên bài...">
+      <button class="search-btn" id="searchBtn">Tìm kiếm</button>
     </div>
 
     <div class="active-filters" id="activeFilters"></div>
